@@ -5,28 +5,7 @@
     "version": "1.0"
   },
   "paths": {
-    "/api/Images/image_file": {
-      "get": {
-        "tags": [
-          "Images"
-        ],
-        "parameters": [
-          {
-            "name": "file_name",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Location_finder": {
+    "/api/Location_finder/{id}": {
       "get": {
         "tags": [
           "Location_finder"
@@ -36,21 +15,33 @@
             "name": "latitude",
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "number",
+              "format": "double"
             }
           },
           {
             "name": "longtitude",
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "number",
+              "format": "double"
             }
           },
           {
-            "name": "file_name",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "force",
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "boolean",
+              "default": false
             }
           }
         ],

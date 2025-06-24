@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Location_Finder")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+aee61e35714afb66c7c4fd094f7bcefe494d6f0b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2cb07b53aae2d86b5b3c2073faf500ac273d7b02")]
 [assembly: System.Reflection.AssemblyProductAttribute("Location_Finder")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Location_Finder")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

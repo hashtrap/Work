@@ -1,41 +1,30 @@
 [
   {
-    "ContainingType": "Location_Finder.Controllers.Images",
-    "Method": "Get_Image_File",
-    "RelativePath": "api/Images/image_file",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "file_name",
-        "Type": "System.String",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
     "ContainingType": "Location_Finder.Controllers.Location_finder",
     "Method": "Get_Map",
-    "RelativePath": "api/Location_finder",
+    "RelativePath": "api/Location_finder/{id}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
         "Name": "latitude",
-        "Type": "System.String",
+        "Type": "System.Double",
         "IsRequired": false
       },
       {
         "Name": "longtitude",
-        "Type": "System.String",
+        "Type": "System.Double",
         "IsRequired": false
       },
       {
-        "Name": "file_name",
-        "Type": "System.String",
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "force",
+        "Type": "System.Boolean",
         "IsRequired": false
       }
     ],
