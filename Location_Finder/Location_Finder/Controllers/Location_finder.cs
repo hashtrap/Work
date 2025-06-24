@@ -58,39 +58,39 @@ namespace Location_Finder.Controllers
                 }
                 else
                 {
-                try
-                {
+                     try
+                     {
 
-                    string _apikey = _configuration["Geoapify:ApiKey"];
+                        string _apikey = _configuration["Geoapify:ApiKey"];
 
-                    var httpClient = _httpClientFactory.CreateClient();
-                    string UrlHelper = $"https://maps.geoapify.com/v1/staticmap?style=osm-liberty&width=1200&height=800&center=lonlat:{longtitude.ToString().Trim()},{latitude.ToString().Trim()}&marker=lonlat%3A23.69912%2C37.92087%3Btype%3Aawesome%3Bcolor%3A%23bc0919%3Bsize%3Ax-large%3Bicon%3Ahome&zoom=17&pitch=45&apiKey={_apikey}";
+                        var httpClient = _httpClientFactory.CreateClient();
+                        string UrlHelper = $"https://maps.geoapify.com/v1/staticmap?style=osm-liberty&width=1200&height=800&center=lonlat:{longtitude.ToString()},{latitude.ToString()}&marker=lonlat%3A{longtitude.ToString()}%2C{latitude.ToString()}%3Btype%3Aawesome%3Bcolor%3A%23bc0919%3Bsize%3Ax-large%3Bicon%3Ahome&zoom=17&pitch=45&apiKey={_apikey}";
 
-                    var image = await httpClient.GetStreamAsync(UrlHelper);
-                    using (var memory_stream = new MemoryStream())
-                    {
-                        await image.CopyToAsync(memory_stream);
-
-                        memory_stream.Position = 0;
-
-                        using (var file_stream = new FileStream(filepath, FileMode.Create))
+                        var image = await httpClient.GetStreamAsync(UrlHelper);
+                        using (var memory_stream = new MemoryStream())
                         {
-                            await memory_stream.CopyToAsync(file_stream);
+                            await image.CopyToAsync(memory_stream);
+
+                            memory_stream.Position = 0;
+
+                            using (var file_stream = new FileStream(filepath, FileMode.Create))
+                            {
+                                await memory_stream.CopyToAsync(file_stream);
+                            }
                         }
+
+                    
+                     Response.Headers.Add("X-Message", "New File created, returning  file.");
+                     return PhysicalFile(filepath, "image/png");
+                    
+                     }
+                    catch (HttpRequestException ex)
+                    {
+                        _logger.LogError(ex, "An error occurred while fetching the map image.");
+                        return BadRequest(new { Message = "Internal server error. Please try again later." });
                     }
 
-                    
-                    Response.Headers.Add("X-Message", "New File created, returning  file.");
-                    return PhysicalFile(filepath, "image/png");
-                    
-                }
-                catch (HttpRequestException ex)
-                {
-                    _logger.LogError(ex, "An error occurred while fetching the map image.");
-                    return BadRequest(new { Message = "Internal server error. Please try again later." });
-                }
-
-            }        
+                }        
 
         }
     }
