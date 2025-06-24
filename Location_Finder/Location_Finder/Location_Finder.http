@@ -1,0 +1,6 @@
+@Location_Finder_HostAddress = http://localhost:5002
+
+GET {{Location_Finder_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
