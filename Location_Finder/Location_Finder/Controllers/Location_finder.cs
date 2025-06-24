@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
+using System.Diagnostics.Metrics;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -10,22 +12,23 @@ namespace Location_Finder.Controllers
     {
 
         private IHttpClientFactory _httpClientFactory;
-    private readonly IWebHostEnvironment _env;
-    private readonly IConfiguration _configuration;
-    private readonly ILogger<Location_finder> _logger;
+        private readonly IWebHostEnvironment _env;
+        private readonly IConfiguration _configuration;
+        private readonly ILogger<Location_finder> _logger;        
 
-
-        public Location_finder(ILogger<Location_finder> log, IConfiguration config,IHttpClientFactory client,IWebHostEnvironment env)
+        public Location_finder(ILogger<Location_finder> log, IConfiguration config, IHttpClientFactory client, 
+                                IWebHostEnvironment env)
         {
             _logger = log;
             _configuration = config;
             _httpClientFactory = client;
-            _env = env;
+            _env = env;            
         }
 
         // GET: api/<Location_finder>
         [HttpGet]
-        public async Task<IActionResult> Get_Map([FromQuery] string? latitude, [FromQuery]string? longtitude)
+        //[Produces("image/png")]
+        public async Task<IActionResult> Get_Map([FromQuery] string latitude, [FromQuery] string longtitude, [FromQuery] string? file_name)
         {
 
 
@@ -33,11 +36,11 @@ namespace Location_Finder.Controllers
 
             var httpClient = _httpClientFactory.CreateClient();
 
-            try 
+            try
             {
-                string Url = $"https://maps.geoapify.com/v1/staticmap?style=osm-liberty&width=1200&height=800&center=lonlat:{longtitude},{latitude}&marker=lonlat%3A23.69912%2C37.92087%3Btype%3Aawesome%3Bcolor%3A%23bc0919%3Bsize%3Ax-large%3Bicon%3Ahome&zoom=17&pitch=45&apiKey={_apikey}";
+                string UrlHelper = $"https://maps.geoapify.com/v1/staticmap?style=osm-liberty&width=1200&height=800&center=lonlat:{longtitude},{latitude}&marker=lonlat%3A23.69912%2C37.92087%3Btype%3Aawesome%3Bcolor%3A%23bc0919%3Bsize%3Ax-large%3Bicon%3Ahome&zoom=17&pitch=45&apiKey={_apikey}";
 
-                var image = await httpClient.GetStreamAsync(Url);
+                var image = await httpClient.GetStreamAsync(UrlHelper);
 
                 string folder = "API_Data";
                 string root_dir = _env.ContentRootPath;
@@ -55,29 +58,48 @@ namespace Location_Finder.Controllers
                     _logger.LogInformation("Folder already exists");
                 }
 
-                string filepath = Path.Combine(new_folder, "map.png");
-                using (var memory_stream = new MemoryStream())
+                string filepath = Path.Combine(new_folder, $"{file_name ?? "default"}.png");
+
+                if (System.IO.File.Exists(filepath))
                 {
-                    await image.CopyToAsync(memory_stream);
+                    _logger.LogInformation($"File already exists: {file_name ?? "default"}.png");                                                          
 
-                    memory_stream.Position = 0;
-
-                    using (var file_stream = new FileStream(filepath, FileMode.Create))
+                    return Ok(new
                     {
-                        await memory_stream.CopyToAsync(file_stream);
-                    }
+                        Message = $"File already exists: {file_name ?? "default"}.png",
+                        //ImageUrl = Url.Action("Get_Image_File", "Images")
+                    });
                 }
+                else
+                {
+                    using (var memory_stream = new MemoryStream())
+                    {
+                        await image.CopyToAsync(memory_stream);
 
-                return Ok($"latitude:{latitude} and longtitue:{longtitude}");
-            }
+                        memory_stream.Position = 0;
+
+                        using (var file_stream = new FileStream(filepath, FileMode.Create))
+                        {
+                            await memory_stream.CopyToAsync(file_stream);
+                        }
+                    }
+
+                    return Ok($"New file created:{filepath}");
+                }
+                   
+
+        }
 
             catch (HttpRequestException ex)
             {
                 _logger.LogError(ex, "An error occurred while fetching the map image.");
-                return StatusCode(500, "Internal server error. Please try again later.");
+                return BadRequest(new {  Message="Internal server error. Please try again later."});
             }
 
-        }
 
+
+
+
+        }
     }
 }

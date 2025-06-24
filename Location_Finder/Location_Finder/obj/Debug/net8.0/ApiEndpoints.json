@@ -1,5 +1,21 @@
 [
   {
+    "ContainingType": "Location_Finder.Controllers.Images",
+    "Method": "Get_Image_File",
+    "RelativePath": "api/Images/image_file",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "file_name",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Location_Finder.Controllers.Location_finder",
     "Method": "Get_Map",
     "RelativePath": "api/Location_finder",
@@ -16,105 +32,13 @@
         "Name": "longtitude",
         "Type": "System.String",
         "IsRequired": false
+      },
+      {
+        "Name": "file_name",
+        "Type": "System.String",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Location_Finder.Controllers.Location_finder",
-    "Method": "Post",
-    "RelativePath": "api/Location_finder",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "value",
-        "Type": "System.String",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "System.Void",
-        "MediaTypes": [],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "Location_Finder.Controllers.Location_finder",
-    "Method": "Get",
-    "RelativePath": "api/Location_finder/{id}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "System.String",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "Location_Finder.Controllers.Location_finder",
-    "Method": "Put",
-    "RelativePath": "api/Location_finder/{id}",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      },
-      {
-        "Name": "value",
-        "Type": "System.String",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "System.Void",
-        "MediaTypes": [],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "Location_Finder.Controllers.Location_finder",
-    "Method": "Delete",
-    "RelativePath": "api/Location_finder/{id}",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "System.Void",
-        "MediaTypes": [],
-        "StatusCode": 200
-      }
-    ]
   }
 ]
