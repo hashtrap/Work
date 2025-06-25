@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Mvc.Routing;
 using System.Diagnostics.Metrics;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace Location_Finder.Controllers
 {
     [Route("api/[controller]")]
@@ -25,12 +23,12 @@ namespace Location_Finder.Controllers
             _env = env;
         }
 
-        // GET: api/<Location_finder>
-        [HttpGet("{id}")]
-        //[Produces("image/png")]
+        
+        [HttpGet]
+        
         public async Task<IActionResult> Get_Map([FromQuery] double latitude, [FromQuery] double longtitude, int id,[FromQuery] bool force=false)
         {
-                         
+                id =id % 101;
                 string folder = "API_Data";
                 string root_dir = _env.ContentRootPath;
 
@@ -47,12 +45,12 @@ namespace Location_Finder.Controllers
                     _logger.LogInformation("Folder already exists");
                 }
 
-                string filepath = Path.Combine(new_folder, $"{id.ToString()}.png");
+                string filepath = Path.Combine(new_folder, $"{id}.png");
 
                 if (System.IO.File.Exists(filepath) && !force)
                 {
-                    _logger.LogInformation($"File already exists: {id.ToString()}.png");
-                    Response.Headers.Add("X-Message", "File already exists, returning existing file.");
+                    _logger.LogInformation($"File already exists: {id}.png");
+                _logger.LogInformation($"force status:{force.ToString()}");
 
                     return PhysicalFile(filepath, "image/png");
                 }
@@ -80,8 +78,9 @@ namespace Location_Finder.Controllers
                         }
 
                     
-                     Response.Headers.Add("X-Message", "New File created, returning  file.");
-                     return PhysicalFile(filepath, "image/png");
+                     _logger.LogInformation($"New File created, returning  file.{filepath}");
+                    _logger.LogInformation($"force status:{force.ToString()}");
+                    return PhysicalFile(filepath, "image/png");
                     
                      }
                     catch (HttpRequestException ex)

@@ -2,7 +2,7 @@
   {
     "ContainingType": "Location_Finder.Controllers.Location_finder",
     "Method": "Get_Map",
-    "RelativePath": "api/Location_finder/{id}",
+    "RelativePath": "api/Location_finder",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -20,7 +20,7 @@
       {
         "Name": "id",
         "Type": "System.Int32",
-        "IsRequired": true
+        "IsRequired": false
       },
       {
         "Name": "force",

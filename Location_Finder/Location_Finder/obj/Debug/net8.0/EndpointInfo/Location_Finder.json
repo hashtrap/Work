@@ -5,7 +5,7 @@
     "version": "1.0"
   },
   "paths": {
-    "/api/Location_finder/{id}": {
+    "/api/Location_finder": {
       "get": {
         "tags": [
           "Location_finder"
@@ -29,8 +29,7 @@
           },
           {
             "name": "id",
-            "in": "path",
-            "required": true,
+            "in": "query",
             "schema": {
               "type": "integer",
               "format": "int32"
