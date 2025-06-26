@@ -12,7 +12,7 @@
         ],
         "parameters": [
           {
-            "name": "latitude",
+            "name": "lat",
             "in": "query",
             "schema": {
               "type": "number",
@@ -20,7 +20,7 @@
             }
           },
           {
-            "name": "longtitude",
+            "name": "lon",
             "in": "query",
             "schema": {
               "type": "number",
@@ -41,6 +41,45 @@
             "schema": {
               "type": "boolean",
               "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Location_finder/{id}": {
+      "get": {
+        "tags": [
+          "Location_finder"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "lat",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "lon",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
             }
           }
         ],

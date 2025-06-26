@@ -8,12 +8,12 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "latitude",
+        "Name": "lat",
         "Type": "System.Double",
         "IsRequired": false
       },
       {
-        "Name": "longtitude",
+        "Name": "lon",
         "Type": "System.Double",
         "IsRequired": false
       },
@@ -25,6 +25,32 @@
       {
         "Name": "force",
         "Type": "System.Boolean",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Location_Finder.Controllers.Location_finder",
+    "Method": "return_id",
+    "RelativePath": "api/Location_finder/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "lat",
+        "Type": "System.Double",
+        "IsRequired": false
+      },
+      {
+        "Name": "lon",
+        "Type": "System.Double",
         "IsRequired": false
       }
     ],
