@@ -30,6 +30,7 @@
           {
             "name": "id",
             "in": "query",
+            "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -41,6 +42,50 @@
             "schema": {
               "type": "boolean",
               "default": false
+            }
+          },
+          {
+            "name": "width",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1200
+            }
+          },
+          {
+            "name": "height",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 800
+            }
+          },
+          {
+            "name": "style",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "osm-liberty"
+            }
+          },
+          {
+            "name": "pitch",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 45
+            }
+          },
+          {
+            "name": "zoom",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "default": 17
             }
           }
         ],

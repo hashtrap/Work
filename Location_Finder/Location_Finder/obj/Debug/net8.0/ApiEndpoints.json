@@ -26,6 +26,31 @@
         "Name": "force",
         "Type": "System.Boolean",
         "IsRequired": false
+      },
+      {
+        "Name": "width",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "height",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "style",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "pitch",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "zoom",
+        "Type": "System.Double",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []
