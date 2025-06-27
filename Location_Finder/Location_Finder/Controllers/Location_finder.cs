@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
+using Location_Finder.Models;
 
 
 namespace Location_Finder.Controllers
@@ -29,7 +29,7 @@ namespace Location_Finder.Controllers
 
         [HttpGet]
         
-        public async Task<IActionResult> Get_Map([FromQuery] double lat, [FromQuery] double lon,
+        public async Task<IActionResult> Get_Map([FromQuery] double? lat, [FromQuery] double? lon,
                                                  [FromQuery]int? id=null, [FromQuery] bool force =false,
                                                  [FromQuery]int width = 1200,[FromQuery] int height = 800,
                                                  [FromQuery]string style = "osm-liberty", [FromQuery]int pitch=45,
@@ -37,41 +37,37 @@ namespace Location_Finder.Controllers
         {
 
 
-            string new_folder =await make_default();
+            string new_folder =await make_default();//ensures folder exists and returns path to it
 
             string filepath = Path.Combine(new_folder, $"{id}.jpeg");//Creates path for the new image
             string default_path = Path.Combine(new_folder, "default.jpeg");//Creates default path
 
-            if (!Value_checker(id,lon,lat,zoom,pitch,width,height,style)) 
+            if (!Value_checker(id,lon,lat,zoom,pitch,width,height,style)) //call function to check if parameters are valid
             {
 
                 _logger.LogInformation("Invalid parameters provided, returning default image.");
                 return PhysicalFile(default_path, "image/jpeg");
                 
             }
-
             
-
             if (System.IO.File.Exists(filepath) && !force)//Retrives image from folder and sends to client
             {
-                _logger.LogInformation($"File already exists: {id}.jpeg");
-                _logger.LogInformation($"force status:{force.ToString()}");
+                _logger.LogInformation($"File already exists: {id}.jpeg");                
 
-                return PhysicalFile(filepath, "image/jpeg");
+                return PhysicalFile(filepath, "image/jpeg");//return file from folder path
             }
             else
             {
                 try
                 {
-
                     
-
                     var httpClient = _httpClientFactory.CreateClient();
                     string UrlHelper = $"https://maps.geoapify.com/v1/staticmap?style={style}&width={width}&height={height}&center=lonlat:{lon.ToString()}," +
                             $"{lat.ToString()}&marker=lonlat%3A{lon.ToString()}%2C{lat.ToString()}%3Btype%3Aawesome%3Bcolor%3A%23bc0919%3B" +
                             $"size%3Ax-large%3Bicon%3Ahome&zoom={zoom}&pitch={pitch}&apiKey={_apikey}";
 
                     var image = await httpClient.GetStreamAsync(UrlHelper);
+                    
                     using (var memory_stream = new MemoryStream())// Both using methods are to do automatic disposing
                     {
                         await image.CopyToAsync(memory_stream);
@@ -85,15 +81,14 @@ namespace Location_Finder.Controllers
                     }
 
 
-                    _logger.LogInformation($"New File created, returning  file.{filepath}");
-                    _logger.LogInformation($"force status:{force.ToString()}");
+                    _logger.LogInformation($"New File created, returning  file.{filepath}");                    
                     return PhysicalFile(filepath, "image/jpeg");
 
                 }
-                catch (HttpRequestException ex)//Exception in case of a ba request to API
+                catch (HttpRequestException ex)//Exception in case of a bad request to API
                 {
                     _logger.LogError(ex, "An error occurred while fetching the map image.");
-                    return BadRequest(new { Message = "Internal server error. Please try again later." });
+                    return PhysicalFile(default_path, "image/jpeg");
                 }
 
             }
@@ -102,7 +97,7 @@ namespace Location_Finder.Controllers
 
         [HttpGet("{id}")]
 
-        public async Task<IActionResult> return_id(int id,[FromQuery] double lat, [FromQuery] double lon)//Method with mandatory id
+        public async Task<IActionResult> return_id(int id,[FromQuery] double? lat, [FromQuery] double? lon)//Method with mandatory id
         {                        
 
             string new_folder = await make_default();
@@ -119,7 +114,6 @@ namespace Location_Finder.Controllers
                 {
                     return await Get_Map(lat,lon,id);
                 }
-                _logger.LogInformation("Doing photo from odysseay api");
                 return await no_data(id);
             }
         }
@@ -136,23 +130,6 @@ namespace Location_Finder.Controllers
                 Directory.CreateDirectory(new_folder);
                 _logger.LogInformation($"Directory created: {new_folder}");
 
-                string default_path = Path.Combine(new_folder, "default.jpeg");
-
-                var httpClient = _httpClientFactory.CreateClient();
-                string UrlHelper =$"https://maps.geoapify.com/v1/staticmap?style=osm-liberty&width=1200&height=800&center=lonlat:-73.935242,40.730610&marker=lonlat%3A-73.935242%2C40.730610%3Btype%3Aawesome%3Bcolor%3A%23bc0919%3Bsize%3Ax-large%3Bicon%3Ahome&zoom=17&pitch=45&apiKey={_apikey}";
-
-                var image = await httpClient.GetStreamAsync(UrlHelper);
-                using (var memory_stream = new MemoryStream())
-                {
-                    await image.CopyToAsync(memory_stream);
-
-                    memory_stream.Position = 0;
-
-                    using (var file_stream = new FileStream(default_path, FileMode.Create))
-                    {
-                        await memory_stream.CopyToAsync(file_stream);
-                    }
-                }
                 return new_folder;
             }
 
@@ -163,10 +140,10 @@ namespace Location_Finder.Controllers
             }
         }
 
-        private bool Value_checker(int? id, double lon,double lat,double zoom=15,int pitch=14,int width=800,
-                                   int height=800,string style= "osm-carto") 
+        private bool Value_checker(int? id, double? lon,double? lat,double zoom,int pitch,int width,
+                                   int height,string style) 
         {
-            HashSet<string> styles = new HashSet<string>
+            HashSet<string> styles = new HashSet<string> //created a set for faster itme access
             {
                 "osm-carto","osm-bright","osm-bright-grey",
                 "osm-bright-smooth","klokantech-basic","osm-liberty",
@@ -178,13 +155,13 @@ namespace Location_Finder.Controllers
 
             if (id <= 0||!id.HasValue)
             {
-                _logger.LogInformation("ID must be greater than 0.");
+                
                 return false;
             }
 
-            if (!((lat <= 90 && lat >= -90) && (lon <= 180 && lon >= -180))) //A check if longtitude and latitude are between the correct thresholds
+            if (!((lat <= 90 && lat >= -90) && (lon <= 180 && lon >= -180)) || !lat.HasValue||!lon.HasValue) 
             {
-                _logger.LogInformation("Returning default value,longtitude or latitude was incorrect");
+                
                 return false;
             }
 
@@ -212,39 +189,40 @@ namespace Location_Finder.Controllers
 
         }
 
-        private async Task<IActionResult> no_data(int id) 
+        private async Task<IActionResult> no_data(int id) // method to retrive api data when id foesn't exist and coordinates aren't given
         {
-            var client = _httpClientFactory.CreateClient();
-            string url = "https://pre.grekodom.com/miniapi/getrealtycoordinates/52888";
-
-            string response = await client.GetStringAsync(url);
-            string[] values= response.Split(',');  
-
-            _logger.LogInformation($"Response from API: {values}");
-            for (int i=0;i<values.Length;i++) 
+            try
             {
-                if (i == 0) 
-                {
-                    
-                    values[i] = values[i].Remove(0, 9);
-                    values[i].Trim();
-                    _logger.LogInformation($"Response from array: {values[i]}");
-                }
-                else 
-                {
+                var client = _httpClientFactory.CreateClient();
+                string url = $"https://pre.grekodom.com/miniapi/getrealtycoordinates/{id}";
 
-                    values[i] = values[i].Remove(0, 8);
-                    values[i] = values[i].Remove(values[i].Length-1);
-                    values[i].Trim();
-                    _logger.LogInformation($"Response from array: {values[i]}");
-                }
-                     
+                string response = await client.GetStringAsync(url);
+
+                var out_response= JsonConvert.DeserializeObject<ApiResponse>(response);
+                var coordinates = JsonConvert.DeserializeObject<Coordinate>(out_response.Result);
+
+
+                _logger.LogInformation("Logging begins here");
+                _logger.LogInformation($"X is:{coordinates.MapX}");
+                _logger.LogInformation($"Y is:{coordinates.MapY}");
+
+                //double? X=coordinates
+
+
+                return await Get_Map(y, x, id);// call function to get the icon and add the image to the folder
             }
 
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError($"API request failed: {ex.Message}");
+                return StatusCode(500, "API request failed");
+            }
+            catch (JsonException ex)
+            {
+                _logger.LogError($"JSON parsing error: {ex.Message}");
+                return BadRequest("Invalid JSON format");
+            }
             
-
-
-            return await Get_Map(Double.Parse(values[0]), Double.Parse(values[1]),id);
         }
 
         
