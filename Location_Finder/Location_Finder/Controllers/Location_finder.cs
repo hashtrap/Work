@@ -206,7 +206,8 @@ namespace Location_Finder.Controllers
                 _logger.LogInformation($"X is:{coordinates.MapX}");
                 _logger.LogInformation($"Y is:{coordinates.MapY}");
 
-                //double? X=coordinates
+              double? X = string.IsNullOrEmpty(coordinates.MapX) ? null : Double.Parse(coordinates.MapX);
+              double? Y = string.IsNullOrEmpty(coordinates.MapY) ? null : Double.Parse(coordinates.MapY);
 
 
                 return await Get_Map(y, x, id);// call function to get the icon and add the image to the folder
