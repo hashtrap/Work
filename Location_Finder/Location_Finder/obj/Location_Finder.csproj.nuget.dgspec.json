@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\letme\\OneDrive\\Desktop\\work\\Work\\Location_Finder\\Location_Finder\\Location_Finder.csproj": {}
+    "C:\\Users\\sgkousi\\Desktop\\work\\Work\\Location_Finder\\Location_Finder\\Location_Finder.csproj": {}
   },
   "projects": {
-    "C:\\Users\\letme\\OneDrive\\Desktop\\work\\Work\\Location_Finder\\Location_Finder\\Location_Finder.csproj": {
+    "C:\\Users\\sgkousi\\Desktop\\work\\Work\\Location_Finder\\Location_Finder\\Location_Finder.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\letme\\OneDrive\\Desktop\\work\\Work\\Location_Finder\\Location_Finder\\Location_Finder.csproj",
+        "projectUniqueName": "C:\\Users\\sgkousi\\Desktop\\work\\Work\\Location_Finder\\Location_Finder\\Location_Finder.csproj",
         "projectName": "Location_Finder",
-        "projectPath": "C:\\Users\\letme\\OneDrive\\Desktop\\work\\Work\\Location_Finder\\Location_Finder\\Location_Finder.csproj",
-        "packagesPath": "C:\\Users\\letme\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\letme\\OneDrive\\Desktop\\work\\Work\\Location_Finder\\Location_Finder\\obj\\",
+        "projectPath": "C:\\Users\\sgkousi\\Desktop\\work\\Work\\Location_Finder\\Location_Finder\\Location_Finder.csproj",
+        "packagesPath": "C:\\Users\\sgkousi\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\sgkousi\\Desktop\\work\\Work\\Location_Finder\\Location_Finder\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\letme\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\sgkousi\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -74,7 +74,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.Metrics;
-using System.Runtime.InteropServices.Marshalling;
+
 
 namespace Location_Finder.Controllers
 {
@@ -31,7 +30,7 @@ namespace Location_Finder.Controllers
         [HttpGet]
         
         public async Task<IActionResult> Get_Map([FromQuery] double lat, [FromQuery] double lon,
-                                                 [FromQuery][Required]int id, [FromQuery] bool force =false,
+                                                 [FromQuery]int? id=null, [FromQuery] bool force =false,
                                                  [FromQuery]int width = 1200,[FromQuery] int height = 800,
                                                  [FromQuery]string style = "osm-liberty", [FromQuery]int pitch=45,
                                                  [FromQuery]double zoom=17)
@@ -40,28 +39,25 @@ namespace Location_Finder.Controllers
 
             string new_folder =await make_default();
 
-            string filepath = Path.Combine(new_folder, $"{id}.png");//Creates path for the new image
-            string default_path = Path.Combine(new_folder, "default.png");//Creates default path
+            string filepath = Path.Combine(new_folder, $"{id}.jpeg");//Creates path for the new image
+            string default_path = Path.Combine(new_folder, "default.jpeg");//Creates default path
 
-            if (id<=0) //if user puts 0 or smaller it return default image
+            if (!Value_checker(id,lon,lat,zoom,pitch,width,height,style)) 
             {
+
+                _logger.LogInformation("Invalid parameters provided, returning default image.");
+                return PhysicalFile(default_path, "image/jpeg");
                 
-                _logger.LogInformation("Returning default value,id was incorrect");
-                return PhysicalFile(default_path,"image/png");
             }
 
-            if (!((lat<=90&&lat>=-90)&&(lon<=180&&lon>=-180))) //A check if longtitude and latitude are between the correct thresholds
-            {
-                _logger.LogInformation("Returning default value,longtitude or latitude was incorrect");
-                return PhysicalFile(default_path, "image/png");
-            }
+            
 
             if (System.IO.File.Exists(filepath) && !force)//Retrives image from folder and sends to client
             {
-                _logger.LogInformation($"File already exists: {id}.png");
+                _logger.LogInformation($"File already exists: {id}.jpeg");
                 _logger.LogInformation($"force status:{force.ToString()}");
 
-                return PhysicalFile(filepath, "image/png");
+                return PhysicalFile(filepath, "image/jpeg");
             }
             else
             {
@@ -91,7 +87,7 @@ namespace Location_Finder.Controllers
 
                     _logger.LogInformation($"New File created, returning  file.{filepath}");
                     _logger.LogInformation($"force status:{force.ToString()}");
-                    return PhysicalFile(filepath, "image/png");
+                    return PhysicalFile(filepath, "image/jpeg");
 
                 }
                 catch (HttpRequestException ex)//Exception in case of a ba request to API
@@ -107,20 +103,24 @@ namespace Location_Finder.Controllers
         [HttpGet("{id}")]
 
         public async Task<IActionResult> return_id(int id,[FromQuery] double lat, [FromQuery] double lon)//Method with mandatory id
-        {
-          
+        {                        
+
             string new_folder = await make_default();
-            string filepath = Path.Combine(new_folder, $"{id}.png");
+            string filepath = Path.Combine(new_folder, $"{id}.jpeg");
 
             if (System.IO.File.Exists(filepath)) 
             {
-                _logger.LogInformation($"File path already exists: {id}.png");
-                return PhysicalFile(filepath, "image/png");
+                _logger.LogInformation($"File path already exists: {id}.jpeg");
+                return PhysicalFile(filepath, "image/jpeg");
             }
             else 
             {
-                _logger.LogInformation($"File path does not exist: {id}.png, generating new path.");
-                return await Get_Map(lat, lon, id, false);
+                if ((lat!=null &&lon!=null) && (lat!=0 &&lon!=0)) 
+                {
+                    return await Get_Map(lat,lon,id);
+                }
+                _logger.LogInformation("Doing photo from odysseay api");
+                return await no_data(id);
             }
         }
 
@@ -136,7 +136,7 @@ namespace Location_Finder.Controllers
                 Directory.CreateDirectory(new_folder);
                 _logger.LogInformation($"Directory created: {new_folder}");
 
-                string default_path = Path.Combine(new_folder, "default.png");
+                string default_path = Path.Combine(new_folder, "default.jpeg");
 
                 var httpClient = _httpClientFactory.CreateClient();
                 string UrlHelper =$"https://maps.geoapify.com/v1/staticmap?style=osm-liberty&width=1200&height=800&center=lonlat:-73.935242,40.730610&marker=lonlat%3A-73.935242%2C40.730610%3Btype%3Aawesome%3Bcolor%3A%23bc0919%3Bsize%3Ax-large%3Bicon%3Ahome&zoom=17&pitch=45&apiKey={_apikey}";
@@ -161,6 +161,90 @@ namespace Location_Finder.Controllers
                 _logger.LogInformation("Folder already exists");
                 return new_folder;
             }
+        }
+
+        private bool Value_checker(int? id, double lon,double lat,double zoom=15,int pitch=14,int width=800,
+                                   int height=800,string style= "osm-carto") 
+        {
+            HashSet<string> styles = new HashSet<string>
+            {
+                "osm-carto","osm-bright","osm-bright-grey",
+                "osm-bright-smooth","klokantech-basic","osm-liberty",
+                "maptiler-3d","toner","toner-grey",
+                "positron","positron-blue","positron-red",
+                "dark-matter","dark-matter-brown","dark-matter-dark-purple",
+                "dark-matter-dark-grey","dark-matter-dark-purple-roads","dark-matter-dark-yellow-roads"
+            };
+
+            if (id <= 0||!id.HasValue)
+            {
+                _logger.LogInformation("ID must be greater than 0.");
+                return false;
+            }
+
+            if (!((lat <= 90 && lat >= -90) && (lon <= 180 && lon >= -180))) //A check if longtitude and latitude are between the correct thresholds
+            {
+                _logger.LogInformation("Returning default value,longtitude or latitude was incorrect");
+                return false;
+            }
+
+            if (zoom<1 || zoom>20) 
+            {
+                return false;
+            }
+
+            if (pitch<0 ||pitch>60) 
+            {
+                return false;
+            }
+
+            if (!styles.Contains(style)) 
+            {
+                return false;
+            }
+
+            if (width<0||width>4096||height<0||height>4096) 
+            {
+                return false;
+            }
+
+            return true;
+
+        }
+
+        private async Task<IActionResult> no_data(int id) 
+        {
+            var client = _httpClientFactory.CreateClient();
+            string url = "https://pre.grekodom.com/miniapi/getrealtycoordinates/52888";
+
+            string response = await client.GetStringAsync(url);
+            string[] values= response.Split(',');  
+
+            _logger.LogInformation($"Response from API: {values}");
+            for (int i=0;i<values.Length;i++) 
+            {
+                if (i == 0) 
+                {
+                    
+                    values[i] = values[i].Remove(0, 9);
+                    values[i].Trim();
+                    _logger.LogInformation($"Response from array: {values[i]}");
+                }
+                else 
+                {
+
+                    values[i] = values[i].Remove(0, 8);
+                    values[i] = values[i].Remove(values[i].Length-1);
+                    values[i].Trim();
+                    _logger.LogInformation($"Response from array: {values[i]}");
+                }
+                     
+            }
+
+            
+
+
+            return await Get_Map(Double.Parse(values[0]), Double.Parse(values[1]),id);
         }
 
         
