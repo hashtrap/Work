@@ -210,7 +210,7 @@ namespace Location_Finder.Controllers
               double? Y = string.IsNullOrEmpty(coordinates.MapY) ? null : Double.Parse(coordinates.MapY);
 
 
-                return await Get_Map(y, x, id);// call function to get the icon and add the image to the folder
+                return await Get_Map(Y, X, id);// call function to get the icon and add the image to the folder
             }
 
             catch (HttpRequestException ex)
