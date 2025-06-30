@@ -23,7 +23,7 @@ namespace Location_Finder.Controllers
             _configuration = config;
             _httpClientFactory = client;
             _env = env;
-            _apikey = _configuration["Geoapify:API_KEY"];
+            _apikey = _configuration["Geoapify:API_KEY"]; //Request API key from local .json file
         }
 
 
