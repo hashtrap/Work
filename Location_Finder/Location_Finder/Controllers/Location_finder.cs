@@ -15,6 +15,8 @@ namespace Location_Finder.Controllers
         private readonly IConfiguration _configuration;
         private readonly ILogger<Location_finder> _logger;
         private readonly string _apikey;
+        private static readonly string  default_path;
+        private static readonly string filepath;
 
         public Location_finder(ILogger<Location_finder> log, IConfiguration config, IHttpClientFactory client,
                                IWebHostEnvironment env)
@@ -24,6 +26,7 @@ namespace Location_Finder.Controllers
             _httpClientFactory = client;
             _env = env;
             _apikey = _configuration["Geoapify:API_KEY"]; //Request API key from local .json file
+
         }
 
 
@@ -56,8 +59,7 @@ namespace Location_Finder.Controllers
 
                 return PhysicalFile(filepath, "image/jpeg");//return file from folder path
             }
-            else
-            {
+           
                 try
                 {
                     
@@ -91,7 +93,7 @@ namespace Location_Finder.Controllers
                     return PhysicalFile(default_path, "image/jpeg");
                 }
 
-            }
+            
 
         }
 
@@ -110,7 +112,7 @@ namespace Location_Finder.Controllers
             }
             else 
             {
-                if ((lat!=null && lon!=null) && (lat!=0 && lon!=0)) 
+                if ((lat!=null && lon!=null) && (lat!=0 && lon!=0)) // checks if we have provided measurments
                 {
                     return await Get_Map(lat,lon,id);
                 }
@@ -130,7 +132,7 @@ namespace Location_Finder.Controllers
                 Directory.CreateDirectory(new_folder);
                 _logger.LogInformation($"Directory created: {new_folder}");
 
-                return new_folder;
+                return new_folder; //returns folder path
             }
 
             else
@@ -143,7 +145,7 @@ namespace Location_Finder.Controllers
         private bool Value_checker(int? id, double? lon,double? lat,double zoom,int pitch,int width,
                                    int height,string style) 
         {
-            HashSet<string> styles = new HashSet<string> //created a set for faster itme access
+            HashSet<string> styles = new HashSet<string> //created a set for faster item access
             {
                 "osm-carto","osm-bright","osm-bright-grey",
                 "osm-bright-smooth","klokantech-basic","osm-liberty",
@@ -153,34 +155,35 @@ namespace Location_Finder.Controllers
                 "dark-matter-dark-grey","dark-matter-dark-purple-roads","dark-matter-dark-yellow-roads"
             };
 
-            if (id <= 0||!id.HasValue)
+            if (id <= 0|| !id.HasValue)// id check
             {
                 
                 return false;
             }
 
-            if (!((lat <= 90 && lat >= -90) && (lon <= 180 && lon >= -180)) || !lat.HasValue||!lon.HasValue) 
+            if (!((lat <= 90 && lat >= -90) && (lon <= 180 && lon >= -180)) || !lat.HasValue||!lon.HasValue) // langtitude and longitude check
             {
                 
                 return false;
             }
 
-            if (zoom<1 || zoom>20) 
+            if (zoom<1 || zoom>20) // zoom check
+            {
+                return false;
+            }
+            
+
+            if (pitch<0 ||pitch>60) // pitch check
             {
                 return false;
             }
 
-            if (pitch<0 ||pitch>60) 
+            if (!styles.Contains(style)) // style check
             {
                 return false;
             }
 
-            if (!styles.Contains(style)) 
-            {
-                return false;
-            }
-
-            if (width<0||width>4096||height<0||height>4096) 
+            if (width<0||width>4096||height<0||height>4096) //image size check
             {
                 return false;
             }
@@ -200,24 +203,24 @@ namespace Location_Finder.Controllers
 
                 string response = await client.GetStringAsync(url);
 
-                var out_response = JsonConvert.DeserializeObject<ApiResponse>(response);
+                var out_response = JsonConvert.DeserializeObject<ApiResponse>(response);// Deserialize the JSON response
 
-                if (out_response == null || out_response.Result == null)
+                if (out_response == null || out_response.Result == null)// check in case of no data from API
                 {
                     _logger.LogInformation($"No data found for ID: {id}");
                     return PhysicalFile(default_path, "image/jpeg");
                 }   
 
 
-                var coordinates = JsonConvert.DeserializeObject<Coordinate>(out_response.Result);
+                var coordinates = JsonConvert.DeserializeObject<Coordinate>(out_response.Result);// Deserialize the coordinates from the API response to simple object
 
 
-                _logger.LogInformation("Logging begins here");
-                _logger.LogInformation($"X is:{coordinates.MapX}");
+                
+                _logger.LogInformation($"X is:{coordinates.MapX}"); //check for coordinates
                 _logger.LogInformation($"Y is:{coordinates.MapY}");
 
-                double? X = string.IsNullOrEmpty(coordinates.MapX) ? null : Double.Parse(coordinates.MapX);
-                double? Y = string.IsNullOrEmpty(coordinates.MapY) ? null : Double.Parse(coordinates.MapY);
+                double? X = string.IsNullOrEmpty(coordinates.MapX) ? null : Double.Parse(coordinates.MapX); //proper casting of coordinates
+                double? Y = string.IsNullOrEmpty(coordinates.MapY) ? null : Double.Parse(coordinates.MapY); //proper casting of coordinates
 
 
                 return await Get_Map(Y, X, id);// call function to get the icon and add the image to the folder
@@ -236,7 +239,7 @@ namespace Location_Finder.Controllers
 
             catch (SystemException e) 
             {
-                _logger.LogError($"API request error:{e.Message}");
+                _logger.LogError($"JSON deserialization fail:{e.Message}");
                 return BadRequest();
             }
             

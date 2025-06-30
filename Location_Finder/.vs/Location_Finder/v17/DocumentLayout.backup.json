@@ -13,18 +13,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{1BFEA8AF-5B18-42D2-BEFF-3373B303A556}|Location_Finder\\Location_Finder.csproj|c:\\users\\sgkousi\\desktop\\work\\work\\location_finder\\location_finder\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{1BFEA8AF-5B18-42D2-BEFF-3373B303A556}|Location_Finder\\Location_Finder.csproj|solutionrelative:location_finder\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{1BFEA8AF-5B18-42D2-BEFF-3373B303A556}|Location_Finder\\Location_Finder.csproj|c:\\users\\sgkousi\\desktop\\work\\work\\location_finder\\location_finder\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1BFEA8AF-5B18-42D2-BEFF-3373B303A556}|Location_Finder\\Location_Finder.csproj|solutionrelative:location_finder\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{1BFEA8AF-5B18-42D2-BEFF-3373B303A556}|Location_Finder\\Location_Finder.csproj|c:\\users\\sgkousi\\desktop\\work\\work\\location_finder\\location_finder\\models\\coordinate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1BFEA8AF-5B18-42D2-BEFF-3373B303A556}|Location_Finder\\Location_Finder.csproj|solutionrelative:location_finder\\models\\coordinate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{1BFEA8AF-5B18-42D2-BEFF-3373B303A556}|Location_Finder\\Location_Finder.csproj|c:\\users\\sgkousi\\desktop\\work\\work\\location_finder\\location_finder\\models\\apiresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1BFEA8AF-5B18-42D2-BEFF-3373B303A556}|Location_Finder\\Location_Finder.csproj|solutionrelative:location_finder\\models\\apiresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -34,22 +22,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 3,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\sgkousi\\Desktop\\work\\Work\\Location_Finder\\Location_Finder\\Program.cs",
-              "RelativeDocumentMoniker": "Location_Finder\\Program.cs",
-              "ToolTip": "C:\\Users\\sgkousi\\Desktop\\work\\Work\\Location_Finder\\Location_Finder\\Program.cs",
-              "RelativeToolTip": "Location_Finder\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-30T08:22:41.481Z",
-              "IsPinned": true,
-              "EditorCaption": ""
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
@@ -62,9 +36,9 @@
               "RelativeDocumentMoniker": "Location_Finder\\API.json",
               "ToolTip": "C:\\Users\\sgkousi\\Desktop\\work\\Work\\Location_Finder\\Location_Finder\\API.json",
               "RelativeToolTip": "Location_Finder\\API.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAALAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-06-30T09:05:35.732Z",
+              "WhenOpened": "2025-06-30T10:04:43.611Z",
               "EditorCaption": ""
             },
             {
@@ -75,35 +49,10 @@
               "RelativeDocumentMoniker": "Location_Finder\\appsettings.json",
               "ToolTip": "C:\\Users\\sgkousi\\Desktop\\work\\Work\\Location_Finder\\Location_Finder\\appsettings.json",
               "RelativeToolTip": "Location_Finder\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAPAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-06-30T08:38:53.813Z",
+              "WhenOpened": "2025-06-30T10:04:41.799Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "Coordinate.cs",
-              "DocumentMoniker": "C:\\Users\\sgkousi\\Desktop\\work\\Work\\Location_Finder\\Location_Finder\\Models\\Coordinate.cs",
-              "RelativeDocumentMoniker": "Location_Finder\\Models\\Coordinate.cs",
-              "ToolTip": "C:\\Users\\sgkousi\\Desktop\\work\\Work\\Location_Finder\\Location_Finder\\Models\\Coordinate.cs",
-              "RelativeToolTip": "Location_Finder\\Models\\Coordinate.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAQAAAAWAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-27T15:30:14.653Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "ApiResponse.cs",
-              "DocumentMoniker": "C:\\Users\\sgkousi\\Desktop\\work\\Work\\Location_Finder\\Location_Finder\\Models\\ApiResponse.cs",
-              "RelativeDocumentMoniker": "Location_Finder\\Models\\ApiResponse.cs",
-              "ToolTip": "C:\\Users\\sgkousi\\Desktop\\work\\Work\\Location_Finder\\Location_Finder\\Models\\ApiResponse.cs",
-              "RelativeToolTip": "Location_Finder\\Models\\ApiResponse.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAWAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-27T15:28:44.428Z"
             },
             {
               "$type": "Document",
@@ -113,7 +62,7 @@
               "RelativeDocumentMoniker": "Location_Finder\\Controllers\\Location_finder.cs",
               "ToolTip": "C:\\Users\\sgkousi\\Desktop\\work\\Work\\Location_Finder\\Location_Finder\\Controllers\\Location_finder.cs",
               "RelativeToolTip": "Location_Finder\\Controllers\\Location_finder.cs",
-              "ViewState": "AgIAABAAAAAAAAAAAAAqwBkAAAAuAAAAAAAAAA==",
+              "ViewState": "AgIAAIgAAAAAAAAAAAAqwJgAAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-24T07:36:26.888Z",
               "EditorCaption": ""
