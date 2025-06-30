@@ -23,21 +23,21 @@ namespace Location_Finder.Controllers
             _configuration = config;
             _httpClientFactory = client;
             _env = env;
-            _apikey = _configuration["Geoapify:ApiKey"];
+            _apikey = _configuration["Geoapify:API_KEY"];
         }
 
 
         [HttpGet]
         
         public async Task<IActionResult> Get_Map([FromQuery] double? lat, [FromQuery] double? lon,
-                                                 [FromQuery]int? id=null, [FromQuery] bool force =false,
+                                                 [FromQuery] int? id =null, [FromQuery] bool force =false,
                                                  [FromQuery]int width = 1200,[FromQuery] int height = 800,
                                                  [FromQuery]string style = "osm-liberty", [FromQuery]int pitch=45,
                                                  [FromQuery]double zoom=17)
         {
 
 
-            string new_folder =await make_default();//ensures folder exists and returns path to it
+            string new_folder =make_default();//ensures folder exists and returns path to it
 
             string filepath = Path.Combine(new_folder, $"{id}.jpeg");//Creates path for the new image
             string default_path = Path.Combine(new_folder, "default.jpeg");//Creates default path
@@ -81,7 +81,7 @@ namespace Location_Finder.Controllers
                     }
 
 
-                    _logger.LogInformation($"New File created, returning  file.{filepath}");                    
+                    _logger.LogInformation($"New File created, returning  file:{filepath}");                    
                     return PhysicalFile(filepath, "image/jpeg");
 
                 }
@@ -100,7 +100,7 @@ namespace Location_Finder.Controllers
         public async Task<IActionResult> return_id(int id,[FromQuery] double? lat, [FromQuery] double? lon)//Method with mandatory id
         {                        
 
-            string new_folder = await make_default();
+            string new_folder = make_default();
             string filepath = Path.Combine(new_folder, $"{id}.jpeg");
 
             if (System.IO.File.Exists(filepath)) 
@@ -110,7 +110,7 @@ namespace Location_Finder.Controllers
             }
             else 
             {
-                if ((lat!=null &&lon!=null) && (lat!=0 &&lon!=0)) 
+                if ((lat!=null && lon!=null) && (lat!=0 && lon!=0)) 
                 {
                     return await Get_Map(lat,lon,id);
                 }
@@ -118,7 +118,7 @@ namespace Location_Finder.Controllers
             }
         }
 
-        private async Task<string> make_default() // Creates Directory and puts a default image 
+        private  string make_default() // Creates Directory and puts a default image 
         {
             string folder = "API_Data";
             string root_dir = _env.ContentRootPath;
@@ -191,6 +191,8 @@ namespace Location_Finder.Controllers
 
         private async Task<IActionResult> no_data(int id) // method to retrive api data when id foesn't exist and coordinates aren't given
         {
+            string new_folder = make_default();
+            string default_path = Path.Combine(new_folder, "default.jpeg");
             try
             {
                 var client = _httpClientFactory.CreateClient();
@@ -198,7 +200,15 @@ namespace Location_Finder.Controllers
 
                 string response = await client.GetStringAsync(url);
 
-                var out_response= JsonConvert.DeserializeObject<ApiResponse>(response);
+                var out_response = JsonConvert.DeserializeObject<ApiResponse>(response);
+
+                if (out_response == null || out_response.Result == null)
+                {
+                    _logger.LogInformation($"No data found for ID: {id}");
+                    return PhysicalFile(default_path, "image/jpeg");
+                }   
+
+
                 var coordinates = JsonConvert.DeserializeObject<Coordinate>(out_response.Result);
 
 
@@ -206,8 +216,8 @@ namespace Location_Finder.Controllers
                 _logger.LogInformation($"X is:{coordinates.MapX}");
                 _logger.LogInformation($"Y is:{coordinates.MapY}");
 
-              double? X = string.IsNullOrEmpty(coordinates.MapX) ? null : Double.Parse(coordinates.MapX);
-              double? Y = string.IsNullOrEmpty(coordinates.MapY) ? null : Double.Parse(coordinates.MapY);
+                double? X = string.IsNullOrEmpty(coordinates.MapX) ? null : Double.Parse(coordinates.MapX);
+                double? Y = string.IsNullOrEmpty(coordinates.MapY) ? null : Double.Parse(coordinates.MapY);
 
 
                 return await Get_Map(Y, X, id);// call function to get the icon and add the image to the folder
@@ -216,17 +226,21 @@ namespace Location_Finder.Controllers
             catch (HttpRequestException ex)
             {
                 _logger.LogError($"API request failed: {ex.Message}");
-                return StatusCode(500, "API request failed");
+                return BadRequest();
             }
             catch (JsonException ex)
             {
                 _logger.LogError($"JSON parsing error: {ex.Message}");
-                return BadRequest("Invalid JSON format");
+                return BadRequest();
+            }
+
+            catch (SystemException e) 
+            {
+                _logger.LogError($"API request error:{e.Message}");
+                return BadRequest();
             }
             
         }
-
         
-
     }
 }
