@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Location_Finder.Models;
+using System.Globalization;
 
 
 namespace Location_Finder.Controllers
@@ -15,7 +16,7 @@ namespace Location_Finder.Controllers
         private readonly IConfiguration _configuration;
         private readonly ILogger<Location_finder> _logger;
         private readonly string _apikey;
-        private static readonly string  default_path;
+        private static readonly string default_path;
         private static readonly string filepath;
 
         public Location_finder(ILogger<Location_finder> log, IConfiguration config, IHttpClientFactory client,
@@ -30,79 +31,82 @@ namespace Location_Finder.Controllers
         }
 
 
-        [HttpGet]
-        
-        public async Task<IActionResult> Get_Map([FromQuery] double? lat, [FromQuery] double? lon,
-                                                 [FromQuery] int? id =null, [FromQuery] bool force =false,
-                                                 [FromQuery]int width = 1200,[FromQuery] int height = 800,
-                                                 [FromQuery]string style = "osm-liberty", [FromQuery]int pitch=45,
-                                                 [FromQuery]double zoom=17)
+
+
+        private async Task<IActionResult> GetMap([FromQuery] double? lat, [FromQuery] double? lon,
+                                                 [FromQuery] int? id = null, [FromQuery] bool force = false,
+                                                 [FromQuery] int width = 1200, [FromQuery] int height = 800,
+                                                 [FromQuery] string style = "osm-liberty", [FromQuery] int pitch = 45,
+                                                 [FromQuery] double zoom = 17)
         {
 
 
-            string new_folder =make_default();//ensures folder exists and returns path to it
+            string new_folder = makeDefault();//ensures folder exists and returns path to it
 
             string filepath = Path.Combine(new_folder, $"{id}.jpeg");//Creates path for the new image
             string default_path = Path.Combine(new_folder, "default.jpeg");//Creates default path
 
-            if (!Value_checker(id,lon,lat,zoom,pitch,width,height,style)) //call function to check if parameters are valid
+            if (!valueChecker(id, lon, lat, zoom, pitch, width, height, style)) //call function to check if parameters are valid
             {
 
                 _logger.LogInformation("Invalid parameters provided, returning default image.");
                 return PhysicalFile(default_path, "image/jpeg");
-                
+
             }
-            
+
             if (System.IO.File.Exists(filepath) && !force)//Retrives image from folder and sends to client
             {
-                _logger.LogInformation($"File already exists: {id}.jpeg");                
+                _logger.LogInformation($"File already exists: {id}.jpeg");
 
                 return PhysicalFile(filepath, "image/jpeg");//return file from folder path
             }
-           
-                try
-                {
-                    
-                    var httpClient = _httpClientFactory.CreateClient();
-                    string UrlHelper = $"https://maps.geoapify.com/v1/staticmap?style={style}&width={width}&height={height}&center=lonlat:{lon.ToString()}," +
-                            $"{lat.ToString()}&marker=lonlat%3A{lon.ToString()}%2C{lat.ToString()}%3Btype%3Aawesome%3Bcolor%3A%23bc0919%3B" +
-                            $"size%3Ax-large%3Bicon%3Ahome&zoom={zoom}&pitch={pitch}&apiKey={_apikey}";
 
-                    var image = await httpClient.GetStreamAsync(UrlHelper);
-                    
-                    using (var memory_stream = new MemoryStream())// Both using methods are to do automatic disposing
+            try
+            {
+
+                var httpClient = _httpClientFactory.CreateClient();
+                string UrlHelper = $"https://maps.geoapify.com/v1/staticmap?style={style}&width={width}&height={height}&center=lonlat:{lon.ToString().Replace(",", ".")}," +
+                        $"{lat.ToString().Replace(",", ".")}&marker=lonlat%3A{lon.ToString().Replace(",", ".")}%2C{lat.ToString().Replace(",", ".")}%3Btype%3Aawesome%3Bcolor%3A%23bc0919%3B" +
+                        $"size%3Ax-large%3Bicon%3Ahome&zoom={zoom}&pitch={pitch}&apiKey={_apikey}";
+
+                var image = await httpClient.GetStreamAsync(UrlHelper);
+
+                using (var memory_stream = new MemoryStream())// Both using methods are to do automatic disposing
+                {
+                    await image.CopyToAsync(memory_stream);
+
+                    memory_stream.Position = 0;
+
+                    using (var file_stream = new FileStream(filepath, FileMode.Create))
                     {
-                        await image.CopyToAsync(memory_stream);
-
-                        memory_stream.Position = 0;
-
-                        using (var file_stream = new FileStream(filepath, FileMode.Create))
-                        {
-                            await memory_stream.CopyToAsync(file_stream);
-                        }
+                        await memory_stream.CopyToAsync(file_stream);
                     }
-
-
-                    _logger.LogInformation($"New File created, returning  file:{filepath}");                    
-                    return PhysicalFile(filepath, "image/jpeg");
-
-                }
-                catch (HttpRequestException ex)//Exception in case of a bad request to API
-                {
-                    _logger.LogError(ex, "An error occurred while fetching the map image.");
-                    return PhysicalFile(default_path, "image/jpeg");
                 }
 
-            
+
+                _logger.LogInformation($"New File created, returning  file:{filepath}");
+                return PhysicalFile(filepath, "image/jpeg");
+
+            }
+            catch (HttpRequestException ex)//Exception in case of a bad request to API
+            {
+                _logger.LogError(ex, "An error occurred while fetching the map image.");
+                return PhysicalFile(default_path, "image/jpeg");
+            }
+
+
 
         }
 
         [HttpGet("{id}")]
 
-        public async Task<IActionResult> return_id(int id,[FromQuery] double? lat, [FromQuery] double? lon)//Method with mandatory id
+        public async Task<IActionResult> ReturnId(int id,[FromQuery] double? lat, [FromQuery] double? lon, [FromQuery] bool force = false,
+                                                 [FromQuery] int width = 1200, [FromQuery] int height = 800,
+                                                 [FromQuery] string style = "osm-liberty", [FromQuery] int pitch = 45,
+                                                 [FromQuery] double zoom = 17)
         {                        
 
-            string new_folder = make_default();
+            string new_folder = makeDefault();
             string filepath = Path.Combine(new_folder, $"{id}.jpeg");
 
             if (System.IO.File.Exists(filepath)) 
@@ -114,13 +118,13 @@ namespace Location_Finder.Controllers
             {
                 if ((lat!=null && lon!=null) && (lat!=0 && lon!=0)) // checks if we have provided measurments
                 {
-                    return await Get_Map(lat,lon,id);
+                    return await GetMap(lat,lon,id,force,width,height,style,pitch,zoom);
                 }
-                return await no_data(id);
+                return await NoId(id);
             }
         }
 
-        private  string make_default() // Creates Directory and puts a default image 
+        private  string makeDefault() // Creates Directory and puts a default image 
         {
             string folder = "API_Data";
             string root_dir = _env.ContentRootPath;
@@ -142,7 +146,7 @@ namespace Location_Finder.Controllers
             }
         }
 
-        private bool Value_checker(int? id, double? lon,double? lat,double zoom,int pitch,int width,
+        private bool valueChecker(int? id, double? lon,double? lat,double zoom,int pitch,int width,
                                    int height,string style) 
         {
             HashSet<string> styles = new HashSet<string> //created a set for faster item access
@@ -155,13 +159,13 @@ namespace Location_Finder.Controllers
                 "dark-matter-dark-grey","dark-matter-dark-purple-roads","dark-matter-dark-yellow-roads"
             };
 
-            if (id <= 0|| !id.HasValue)// id check
+            if (!id.HasValue|| id <= 0 )// id check
             {
                 
                 return false;
             }
 
-            if (!((lat <= 90 && lat >= -90) && (lon <= 180 && lon >= -180)) || !lat.HasValue||!lon.HasValue) // langtitude and longitude check
+            if (!lat.HasValue || !lon.HasValue||!((lat <= 90 && lat >= -90) && (lon <= 180 && lon >= -180)) ) // langtitude and longitude check
             {
                 
                 return false;
@@ -192,9 +196,9 @@ namespace Location_Finder.Controllers
 
         }
 
-        private async Task<IActionResult> no_data(int id) // method to retrive api data when id foesn't exist and coordinates aren't given
+        private async Task<IActionResult> NoId(int id) // method to retrive api data when id foesn't exist and coordinates aren't given
         {
-            string new_folder = make_default();
+            string new_folder = makeDefault();
             string default_path = Path.Combine(new_folder, "default.jpeg");
             try
             {
@@ -219,11 +223,11 @@ namespace Location_Finder.Controllers
                 _logger.LogInformation($"X is:{coordinates.MapX}"); //check for coordinates
                 _logger.LogInformation($"Y is:{coordinates.MapY}");
 
-                double? X = string.IsNullOrEmpty(coordinates.MapX) ? null : Double.Parse(coordinates.MapX); //proper casting of coordinates
-                double? Y = string.IsNullOrEmpty(coordinates.MapY) ? null : Double.Parse(coordinates.MapY); //proper casting of coordinates
+                double? X = string.IsNullOrEmpty(coordinates.MapX) ? null : Double.Parse(coordinates.MapX,CultureInfo.InvariantCulture); //proper casting of coordinates
+                double? Y = string.IsNullOrEmpty(coordinates.MapY) ? null : Double.Parse(coordinates.MapY, CultureInfo.InvariantCulture); //proper casting of coordinates
 
 
-                return await Get_Map(Y, X, id);// call function to get the icon and add the image to the folder
+                return await GetMap(Y, X, id);// call function to get the icon and add the image to the folder
             }
 
             catch (HttpRequestException ex)
